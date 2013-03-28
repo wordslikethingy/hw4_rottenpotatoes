@@ -20,7 +20,7 @@ class MoviesController < ApplicationController
     if @selected_ratings == {}
       @selected_ratings = Hash[@all_ratings.map {|rating| [rating, rating]}]
     end
-    
+    #debugger
     if params[:sort] != session[:sort]
       session[:sort] = sort
       flash.keep
@@ -42,6 +42,7 @@ class MoviesController < ApplicationController
 
   def create
     @movie = Movie.create!(params[:movie])
+    #@movie = Movie.create(params[:movie])
     flash[:notice] = "#{@movie.title} was successfully created."
     redirect_to movies_path
   end
@@ -62,6 +63,15 @@ class MoviesController < ApplicationController
     @movie.destroy
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
+  end
+  
+  def by_director
+    movie = Movie.find(params[:id])
+    if movie.director.blank?
+      flash[:notice] = "'#{movie.title}' has no director info"
+      redirect_to movies_path
+    end
+    @movies = Movie.find_all_by_director(movie.director)
   end
 
 end
